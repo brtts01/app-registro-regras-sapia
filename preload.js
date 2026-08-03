@@ -12,4 +12,6 @@ contextBridge.exposeInMainWorld('api', {
   adicionarExtensao: (registroId, extensao)  => ipcRenderer.invoke('adicionar-extensao', registroId, extensao),
   excluirExtensao:          (registroId, extIdx)                    => ipcRenderer.invoke('excluir-extensao', registroId, extIdx),
   excluirExtensaoComMotivo: (registroId, extIdx, motivo, excluidoPor) => ipcRenderer.invoke('excluir-extensao-com-motivo', registroId, extIdx, motivo, excluidoPor),
+  onUpdateStatus:    (callback)                => ipcRenderer.on('update-status', (_, data) => callback(data)),
+  instalarAtualizacao: ()                      => ipcRenderer.invoke('instalar-atualizacao'),
 });

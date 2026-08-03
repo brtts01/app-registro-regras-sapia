@@ -637,6 +637,12 @@
   </div>
 </div>
 
+<!-- BANNER DE ATUALIZACAO -->
+<div id="banner-update" style="display:none;background:#0c7a48;color:#fff;font-family:var(--sans);font-size:13px;padding:8px 20px;align-items:center;justify-content:space-between;gap:12px">
+  <span id="banner-update-texto"></span>
+  <button id="banner-update-btn" onclick="instalarAtualizacao()" style="display:none;background:#fff;color:#0c7a48;border:none;border-radius:6px;padding:6px 14px;font-weight:700;font-size:12px;cursor:pointer">Reiniciar e Instalar</button>
+</div>
+
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" onclick="trocarTab('formulario', this)">Novo Registro</div>
@@ -980,6 +986,30 @@
     }
   }
   init();
+
+  // ── AUTO-UPDATE ──
+  function instalarAtualizacao() {
+    window.api.instalarAtualizacao();
+  }
+  window.api.onUpdateStatus((data) => {
+    const banner = document.getElementById('banner-update');
+    const texto = document.getElementById('banner-update-texto');
+    const btn = document.getElementById('banner-update-btn');
+    if (data.status === 'disponivel') {
+      banner.style.display = 'flex';
+      btn.style.display = 'none';
+      texto.textContent = 'Baixando atualizacao (v' + data.versao + ')...';
+    } else if (data.status === 'baixando') {
+      banner.style.display = 'flex';
+      btn.style.display = 'none';
+      texto.textContent = 'Baixando atualizacao... ' + data.percentual + '%';
+    } else if (data.status === 'pronto') {
+      banner.style.display = 'flex';
+      btn.style.display = 'inline-block';
+      texto.textContent = 'Nova versao (v' + data.versao + ') pronta para instalar.';
+    }
+    // 'atualizado' e 'erro' nao precisam de banner — nao interrompe o uso do app
+  });
 
   // ── TABS ──
   function trocarTab(nome, el) {

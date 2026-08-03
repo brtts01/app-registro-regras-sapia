@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { autoUpdater } = require('electron-updater');
 
 const configPath = path.join(app.getPath('userData'), 'config.json');
 
@@ -75,10 +76,40 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => mainWindow.show());
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  autoUpdater.checkForUpdates().catch(() => {});
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+// ── AUTO-UPDATE (GitHub Releases) ──
+function enviarStatusUpdate(status, extra) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('update-status', { status, ...extra });
+  }
+}
+
+autoUpdater.on('update-available', (info) => {
+  enviarStatusUpdate('disponivel', { versao: info.version });
+});
+autoUpdater.on('update-not-available', () => {
+  enviarStatusUpdate('atualizado');
+});
+autoUpdater.on('error', (err) => {
+  enviarStatusUpdate('erro', { mensagem: err == null ? 'erro desconhecido' : err.message });
+});
+autoUpdater.on('download-progress', (progress) => {
+  enviarStatusUpdate('baixando', { percentual: Math.round(progress.percent) });
+});
+autoUpdater.on('update-downloaded', (info) => {
+  enviarStatusUpdate('pronto', { versao: info.version });
+});
+
+ipcMain.handle('instalar-atualizacao', () => {
+  autoUpdater.quitAndInstall();
 });
 
 //PC HANDLERS
