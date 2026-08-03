@@ -1,6 +1,6 @@
 {
   "name": "registro-de-regras-sapia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sistema de Registro de Regras SAPIA",
   "main": "main.js",
   "scripts": {
@@ -30,7 +30,8 @@
     "publish": {
       "provider": "github",
       "owner": "brtts01",
-      "repo": "app-registro-regras-sapia"
+      "repo": "app-registro-regras-sapia",
+      "releaseType": "release"
     }
   },
   "dependencies": {
